@@ -4,7 +4,9 @@
 \name{sim.promotion.sales}
 \alias{sim.promotion.sales}
 \title{Daily Promotion Sales with Promotion information}
-\format{A dataset containing 1486 observations of 6 variables.}
+\format{
+A dataset containing 1486 observations of 6 variables.
+}
 \source{
 NCsoft AnalysisModeling Team <gimmesilver@ncsoft.com> <windy0126@ncsoft.com> <nhkim1302@ncsoft.com>
 }

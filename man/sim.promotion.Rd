@@ -4,7 +4,9 @@
 \name{sim.promotion}
 \alias{sim.promotion}
 \title{Promotion Schedule}
-\format{A dataset containing 50 observations of 4 variables.}
+\format{
+A dataset containing 50 observations of 4 variables.
+}
 \source{
 NCsoft AnalysisModeling Team <gimmesilver@ncsoft.com> <windy0126@ncsoft.com> <nhkim1302@ncsoft.com>
 }

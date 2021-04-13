@@ -4,7 +4,9 @@
 \name{sim.data}
 \alias{sim.data}
 \title{Daily Total Sales}
-\format{A dataset containing 958 observations of 2 variables.}
+\format{
+A dataset containing 958 observations of 2 variables.
+}
 \source{
 NCsoft AnalysisModeling Team <gimmesilver@ncsoft.com> <windy0126@ncsoft.com> <nhkim1302@ncsoft.com>
 }

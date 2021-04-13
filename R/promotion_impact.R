@@ -31,8 +31,7 @@
 #' @importFrom KernSmooth locpoly
 #' @importFrom stringr str_detect
 #' @importFrom strucchange breakpoints
-#' @importFrom reshape2 melt
-#' @importFrom data.table dcast
+#' @importFrom reshape2 melt dcast
 #' @importFrom utils capture.output tail combn
 #' @examples 
 #' pri1 <- promotionImpact(data=sim.data, promotion=sim.promotion, 
@@ -68,7 +67,7 @@ promotionImpact <- function(data, promotion
   names(data)[1:2] <- c('date','value')
   
   data[,'date'] <- format_time(data[,'date'])
-  data <- data[order(data[,'date']), ]
+  data <- data %>% arrange(date)
   
   if (var.type == 'smooth') {
     
@@ -274,7 +273,7 @@ promotion.model <- function(data, time.field = 'date', target.field = 'value', d
   promotion.field <- promotion.field[!promotion.field %in% dummy.field]
   
   data[,time.field] <- format_time(data[,time.field])
-  data <- data[order(data[time.field]),]
+  data <- data %>% arrange(eval(parse(text = time.field)))
   
   if (trend == TRUE | !is.null(period) == TRUE) {
     message('Estimating trend/periodicity components..')
@@ -481,7 +480,7 @@ create.dummy.vars <- function(target.data, promotion.data, tovar.col = 'pro_id')
   }
   
   target.data['date'] <- format_time(unclass(target.data['date'])[[1]])
-  target.data <- target.data[order(target.data$date),]
+  target.data <- target.data %>% arrange(date)
   promotion.data['start_date'] <- format_time(unclass(promotion.data['start_date'])[[1]])
   promotion.data['end_date'] <- format_time(unclass(promotion.data['end_date'])[[1]])
   
@@ -544,7 +543,7 @@ create.smooth.vars <- function(target.data, promotion.data, smooth.except.date =
   }
   
   target.data['date'] <- format_time(unclass(target.data['date'])[[1]])
-  target.data <- target.data[order(target.data$date),]
+  target.data <- target.data %>% arrange(date)
   promotion.data['start_date'] <- format_time(unclass(promotion.data['start_date'])[[1]])
   promotion.data['end_date'] <- format_time(unclass(promotion.data['end_date'])[[1]])
   promotion.data['date'] <- format_time(unclass(promotion.data['date'])[[1]])
@@ -725,7 +724,7 @@ create.smooth.vars <- function(target.data, promotion.data, smooth.except.date =
       }
     }
   } else {
-    pro.vars <- merge(data.frame(date=target.data$date), data.table::dcast(dt.tagvalue, date~pro_tag, value.var="smoothing.value", sum), by='date', all.x = TRUE)
+    pro.vars <- merge(data.frame(date=target.data$date), reshape2::dcast(dt.tagvalue, date~pro_tag, value.var="smoothing.value", fun.aggregate = sum), by='date', all.x = TRUE)
     pro.vars[is.na(pro.vars)] <- 0 
   }
   
@@ -1110,10 +1109,10 @@ compareModels <- function(data, promotion, fix=list(logged = TRUE, differencing 
   writeLines(c('Analysis report',
                sprintf('To satisfy the assumption of residuals, we recommand %s transformation on the response variable.',
                        crayon::italic(crayon::green(crayon::bold(paste(paste(names(y_cond),y_cond,sep="="),collapse=', '))))), 
-               sprintf('And the most appropriate options for independent variables are %s under %s condition.',
+               sprintf('And the most appropriate option for independent variables are %s under %s condition.',
                        crayon::italic(crayon::green(crayon::bold(paste(paste(names(params)[3:7],params[which.min(params$AIC),3:7],sep="="),collapse = ", ")))),
                        crayon::italic(crayon::green(crayon::bold(paste(paste(names(fix),fix,sep="="),collapse=', '))))
-               ),'But this may be local optimum not global optimum.'))
+               ),'But this result might be local optimum not global optimum.'))
   
   fitted_data <- predict(model[[which.min(params$AIC)]]$model$model, interval = 'confidence')
   fitted_data <- cbind(fitted_data, model[[which.min(params$AIC)]]$model$final_input_data[,c('date','value')])
